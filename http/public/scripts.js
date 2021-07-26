@@ -1,33 +1,14 @@
 const ul = document.querySelector("ul")
 const input = document.querySelector("input")
 const form = document.querySelector('form')
-const path = require('path')
-const URL = require('url')
-const fs = require('fs')
-const data = require('./urls.json')
-
-function writeFile(cb) {
-    fs.writeFile(
-        path.join(__dirname, "urls.json"), 
-        JSON.stringify(data, null, 2),
-        err => {
-            if(err) throw err
-
-            cb(JSON.stringify({message:'ok'}))
-        }
-    )
-}
 
 async function load() {
     // fetch("http://localhost:3000/").then((data) => data.json()).then((data) => console.log(data))
-    const res = await fetch("http://localhost:3000/").then((data) => data.json())
-    res.urls.map(({name, url}) => addElement({name, url}))
-}
 
-async function update() {
-    // fetch("http://localhost:3000/").then((data) => data.json()).then((data) => console.log(data))
+    // Recover data from urls.json
     const res = await fetch("http://localhost:3000/").then((data) => data.json())
-    res.urls.map(({name, url}) => addElement({name, url}))
+
+    res.urls.map(({name, url}) => addElement({name, url}))    
 }
 
 load()
@@ -42,7 +23,12 @@ function addElement({ name, url }) {
     a.target = "_blank"
 
     trash.innerHTML = "x"
-    trash.onclick = () => removeElement(trash)
+    trash.onclick = async () => {
+
+        const res = await fetch(`http://localhost:3000/?name=${name}&url=${url}&del=1`).then((data) => data.json())
+        
+        removeElement(trash)
+    }
 
     li.append(a)
     li.append(trash)
@@ -54,7 +40,7 @@ function removeElement(el) {
         el.parentNode.remove()
 }
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     let { value } = input
@@ -73,4 +59,6 @@ form.addEventListener("submit", (event) => {
     addElement({ name, url })
 
     input.value = ""
+
+    const res = await fetch(`http://localhost:3000/?name=${name}&url=${url}`).then((data) => data.json())
 })
