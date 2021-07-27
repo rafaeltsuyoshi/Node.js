@@ -3,8 +3,6 @@ const input = document.querySelector("input")
 const form = document.querySelector('form')
 
 async function load() {
-    // fetch("http://localhost:3000/").then((data) => data.json()).then((data) => console.log(data))
-
     // Recover data from urls.json
     const res = await fetch("http://localhost:3000/").then((data) => data.json())
 
@@ -25,8 +23,8 @@ function addElement({ name, url }) {
     trash.innerHTML = "x"
     trash.onclick = async () => {
 
-        const res = await fetch(`http://localhost:3000/?name=${name}&url=${url}&del=1`).then((data) => data.json())
-        
+        await fetch(`http://localhost:3000/?name=${name}&url=${url}&del=1`)
+
         removeElement(trash)
     }
 
@@ -60,5 +58,5 @@ form.addEventListener("submit", async (event) => {
 
     input.value = ""
 
-    const res = await fetch(`http://localhost:3000/?name=${name}&url=${url}`).then((data) => data.json())
+    await fetch(`http://localhost:3000/?name=${name}&url=${url}`)
 })
